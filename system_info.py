@@ -1,5 +1,6 @@
 import os 
 import platform
+import shutil
 
 _script_root_path = os.path.abspath(os.path.dirname(__file__)) 
 _script_path = os.path.join(_script_root_path,"script")
@@ -58,6 +59,23 @@ def get_gpu_info():
         info = "not used"
     return info
 
+def get_info(work_path,command):
+    pwd = os.getcwd()
+    if get_os_type() in [_linux,_macos]:
+        os.chdir(work_path)
+        result_path = os.path.join(_info_path,"get.info")
+        cmd_w_log = lambda cmd:os.system(cmd+" > "+result_path)
+        if os.path.exists(result_path):
+            shutil.rm(result_path)
+
+        cmd_w_log(svn_command)
+
+        info = file_read(result_path)
+        os.chdir(pwd)
+    else:
+        info = "not used"
+    return info
+
 def get_disk_info():
     if get_os_type() == _linux:
         gpu_script_path = os.path.join(_script_root_path,"disk_info.sh")
@@ -69,8 +87,10 @@ def get_disk_info():
         info = "not used"
     return info
 
-cmd_test = "echo hello"
-print(get_os_type())
-print(get_disk_info())
-#os.system(cmd_test)
+
+if __name__=="__main__":
+    cmd_test = "echo hello"
+    print(get_os_type())
+    print(get_disk_info())
+    #os.system(cmd_test)
 
